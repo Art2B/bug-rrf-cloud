@@ -7,15 +7,11 @@ import firebase from 'firebase'
 
 import firebaseConfig from './config/firebase'
 
+import PointsContainer from './containers/PointsContainer'
+import AddPointContainer from './containers/AddPointContainer'
+
 // initialize firebase instance
 firebase.initializeApp(firebaseConfig)
-
-// Add reactReduxFirebase enhancer when making store creator
-const createStoreWithFirebase = compose(
-  reactReduxFirebase(firebase, {
-    userProfile: 'users'
-  }), // firebase instance as first argument
-)(createStore)
 
 // Add firebase to reducers
 const rootReducer = combineReducers({
@@ -24,12 +20,24 @@ const rootReducer = combineReducers({
 
 // Create store with reducers and initial state
 const initialState = {}
-const store = createStoreWithFirebase(rootReducer, initialState)
+const store = createStore(
+  rootReducer,
+  initialState,
+  compose(
+   reactReduxFirebase(firebase, {
+      userProfile: 'users'
+    })
+  )
+)
 
 const App = () => (
   <Provider store={store}>
+    <div>
+      <PointsContainer />
+      <AddPointContainer />
+    </div>
   </Provider>
-)
+);
 
 
 ReactDOM.render(<App />, document.getElementById('root'));
